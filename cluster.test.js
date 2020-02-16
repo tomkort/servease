@@ -1,11 +1,11 @@
-const resver = require(".");
+const servease = require(".");
 const fetch = require("node-fetch");
 
 const PORT = 3040;
 
 test("Clustered server.", async () => {
-  const server = resver.createServer();
-  const cluster = resver.listen({
+  const server = servease.createServer();
+  const cluster = servease.listen({
     server: server,
     port: PORT,
     processCount: 2,

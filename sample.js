@@ -1,11 +1,11 @@
-const resver = require(".");
+const servease = require(".");
 
 const args = process.argv.slice(2);
 
 const app =
   args.length > 0
-    ? resver.createServer({ staticPath: { path: args[0], prefix: "/" } })
-    : resver.createServer({
+    ? servease.createServer({ staticPath: { path: args[0], prefix: "/" } })
+    : servease.createServer({
         routes: [
           {
             route: "/post",
@@ -17,7 +17,7 @@ const app =
         ]
       });
 
-let server = resver.listen({
+let server = servease.listen({
   server: app,
   port: 3000,
   processCount: 2

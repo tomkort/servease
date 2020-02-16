@@ -1,7 +1,7 @@
-const resver = require("./server");
+const servease = require("./server");
 
 module.exports = {
-  route: resver.route,
-  createServer: resver.createServer,
-  listen: resver.listen
+  route: servease.route,
+  createServer: servease.createServer,
+  listen: servease.listen
 };

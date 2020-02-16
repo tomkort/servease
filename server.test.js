@@ -1,4 +1,4 @@
-const resver = require(".");
+const servease = require(".");
 const fetch = require("node-fetch");
 
 const PORT = 3030;
@@ -6,8 +6,8 @@ test("Default static file server works and closing the server works.", async () 
   let indexBody = "";
   let error;
 
-  const server = resver.createServer();
-  const app = resver.listen({ server: server, port: PORT, quiet: true });
+  const server = servease.createServer();
+  const app = servease.listen({ server: server, port: PORT, quiet: true });
 
   await fetch(`http://localhost:${PORT}`)
     .then(async res => {
@@ -33,18 +33,18 @@ test("Default static file server works and closing the server works.", async () 
 
 test("Routes with different methods.", async () => {
   const routes = [
-    resver.route("/getTest", "get", async (req, res) => {
+    servease.route("/getTest", "get", async (req, res) => {
       await expect(req.method).toBe("GET");
       res.send("OK");
     }),
-    resver.route("/postTest", "post", async (req, res) => {
+    servease.route("/postTest", "post", async (req, res) => {
       await expect(req.method).toBe("POST");
       res.send("OK");
     })
   ];
 
-  const server = resver.createServer({ routes: routes });
-  const app = resver.listen({ server: server, port: PORT, quiet: true });
+  const server = servease.createServer({ routes: routes });
+  const app = servease.listen({ server: server, port: PORT, quiet: true });
 
   let getStatus = "";
   await fetch(`http://localhost:${PORT}/getTest`)
