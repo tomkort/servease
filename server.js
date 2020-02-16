@@ -2,9 +2,15 @@ const express = require("express");
 const path = require("path");
 const morgan = require("morgan");
 const rotatingFileStream = require("rotating-file-stream");
-const cookieParser = require("cookie-parser");
 
 class ServerProcess {
+  /**
+   * Construct instance of ServerProcess.
+   * @param {?object} server
+   *        Express server object or null if master worker.
+   * @param {?object} worker
+   *        Cluster worker object or null if single process.
+   */
   constructor(server, worker) {
     this.server = server;
     this.worker = worker;
@@ -60,6 +66,8 @@ const route = (route, method, action) => {
  */
 const createServer = ({
   useCompression = true,
+  useJson = true,
+  useCookieParser = true,
   extendedQueryStrings = false,
   logPath = "./log",
   errorsToConsole = true,
@@ -73,9 +81,17 @@ const createServer = ({
     path: logPath
   });
 
-  app.use(express.json());
   app.use(express.urlencoded({ extended: extendedQueryStrings }));
-  app.use(cookieParser());
+
+  if (useJson) {
+    app.use(express.json());
+  }
+  if (useCookieParser) {
+    app.use(require("cookie-parser")());
+  }
+  if (useCompression === true) {
+    app.use(require("compression")());
+  }
 
   // Log errors to console.
   if (errorsToConsole) {
@@ -90,10 +106,6 @@ const createServer = ({
 
   // Log every access in Apache format to file.
   app.use(morgan("combined", { stream: accessLogStream }));
-
-  if (useCompression === true) {
-    app.use(require("compression")());
-  }
 
   if (staticPath !== null) {
     app.use(staticPath.prefix, express.static(staticPath.path));
