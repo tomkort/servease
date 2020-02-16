@@ -1,0 +1,23 @@
+{
+  "name": "servease",
+  "version": "1.0.0",
+  "description": "Create and run ExpressJs server easily.",
+  "main": "index.js",
+  "author": "Tomi Kortelainen <tomi.kortelainen@gmail.com",
+  "license": "MIT",
+  "scripts": {
+    "sample": "node ./sample.js",
+    "test": "jest"
+  },
+  "dependencies": {
+    "compression": "^1.7.4",
+    "cookie-parser": "^1.4.4",
+    "express": "^4.17.1",
+    "morgan": "^1.9.1",
+    "rotating-file-stream": "^2.0.1"
+  },
+  "devDependencies": {
+    "jest": "^25.1.0",
+    "node-fetch": "^2.6.0"
+  }
+}
