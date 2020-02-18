@@ -1,7 +1,7 @@
-const servease = require(".");
+const servease = require("..");
 const fetch = require("node-fetch");
 
-const PORT = 3040;
+const PORT = 3033;
 
 test("Clustered server.", async () => {
   const server = servease.createServer();

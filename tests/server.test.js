@@ -1,7 +1,7 @@
-const servease = require(".");
+const servease = require("..");
 const fetch = require("node-fetch");
 
-const PORT = 3030;
+const PORT = 3031;
 test("Default static file server works and closing the server works.", async () => {
   let indexBody = "";
   let error;

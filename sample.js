@@ -1,4 +1,5 @@
 const servease = require(".");
+const fs = require("fs");
 
 const args = process.argv.slice(2);
 
@@ -20,5 +21,9 @@ const app =
 let server = servease.listen({
   server: app,
   port: 3000,
-  processCount: 2
+  processCount: 2,
+  httpsOptions: {
+    key: fs.readFileSync("key.pem"),
+    cert: fs.readFileSync("cert.pem")
+  }
 });

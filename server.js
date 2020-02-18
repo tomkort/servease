@@ -128,20 +128,36 @@ const createServer = ({
  *          Express.js server object.
  * @param   {number} params.port
  *          Port number to listen.
- * @param   {number} [processCount=1]
+ * @param   {number} [params.processCount=1]
  *          Number of processes to start in cluster mode. Optimally the number of cpu cores.
- * @param   {bool} [quiet=false]
+ * @param   {bool} [params.quiet=false]
  *          Disable printing on console if true.
+ * @param   {?Object} [params.httpsOptions=null]
+ *          Object containing atleast key and cert, optionally ca. If null and by default, creates http server.
+ *          Example:
+ *            {
+ *              key: fs.readFileSync("./key.pem"),
+ *              cert: fs.readFileSync("./cert.pem")
+ *            }
  * @returns {ServerProcess}
  *          Object of type ServerProcess.
  */
-const listen = ({ server, port, processCount = 1, quiet = false }) => {
+const listen = ({
+  server,
+  port,
+  processCount = 1,
+  quiet = false,
+  httpsOptions = null
+}) => {
   const log = quiet ? () => {} : console.log;
 
-  const http = require("http");
+  const http = httpsOptions ? require("https") : require("http");
   if (processCount === 1) {
     return new ServerProcess(
-      http.createServer(server).listen(port, () => {
+      (httpsOptions
+        ? http.createServer(httpsOptions, server)
+        : http.createServer(server)
+      ).listen(port, () => {
         if (!quiet) {
           console.log(`Listening on ${port}`);
         }
@@ -170,7 +186,10 @@ const listen = ({ server, port, processCount = 1, quiet = false }) => {
     return new ServerProcess(null, cluster);
   } else {
     return new ServerProcess(
-      http.createServer(server).listen(port, () => {
+      (httpsOptions
+        ? http.createServer(httpsOptions, server)
+        : http.createServer(server)
+      ).listen(port, () => {
         log(`Worker process id ${process.pid} listening on ${port}`);
       }),
       cluster
