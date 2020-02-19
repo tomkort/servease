@@ -3,11 +3,11 @@ const fetch = require("node-fetch");
 
 const PORT = 3031;
 test("Default static file server works and closing the server works.", async () => {
-  let indexBody = "";
-  let error;
-
   const server = servease.createServer();
   const app = servease.listen({ server: server, port: PORT, quiet: true });
+
+  let indexBody = "";
+  let error;
 
   await fetch(`http://localhost:${PORT}`)
     .then(async res => {
