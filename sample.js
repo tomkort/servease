@@ -10,6 +10,5 @@ const app =
 
 let server = servease.listen({
   server: app,
-  port: 3000,
-  processCount: 2
+  port: 3000
 });

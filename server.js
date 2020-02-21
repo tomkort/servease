@@ -22,7 +22,7 @@ class ServerProcess {
     if (this.server) {
       this.server.close(() => {
         if (this.worker) {
-          this.worker.worker.kill();
+          process.exit(0);
         }
       });
     }
@@ -180,7 +180,7 @@ const listen = ({
 
       if (Object.keys(cluster.workers).length <= 0) {
         log(`Master ${process.pid} died: code ${code}, signal ${signal}`);
-        process.kill(process.pid);
+        process.exit(code);
       }
     });
     return new ServerProcess(null, cluster);
