@@ -32,20 +32,10 @@ class ServerProcess {
 /**
  * @typedef {Object} Route
  * @property {string} route - Path that the route matches to.
- * @property {string} method - HTTP method of the request to respond to.
- * @property {function} action - Action to execute.
+ * @property {string} [method="get"] - HTTP method of the request to respond to.
+ * @property {function} [action] - Action to execute.
+ * @property {string} [root] - Path to directory containing files to serve.
  */
-
-/**
- * Create route.
- * @param   {string} route
- * @param   {string} method
- * @param   {function} action
- * @returns {Route} Route object.
- */
-const route = (route, method, action) => {
-  return { route: route, method: method, action: action };
-};
 
 /**
  * Create server object
@@ -57,9 +47,7 @@ const route = (route, method, action) => {
  *          Enable extendeded query strings.
  * @param   {string} [cfg.logPath="./log"]
  *          Path to directory where to write logs.
- * @param   {?Object} [cfg.static={prefix:"/",path:path.joint[__dirname,"static"]}]
- *          Object containing path and prefix to static files. null if not used.
- * @param   {Route[]} [cfg.routes=[]]
+ * @param   {Route[]} [cfg.routes=[{route: "/", root: path.join(__dirname, "static")}]]
  *          List of routes.
  * @returns {Object}
  *          Express server object.
@@ -71,8 +59,7 @@ const createServer = ({
   extendedQueryStrings = false,
   logPath = "./log",
   errorsToConsole = true,
-  staticPath = { prefix: "/", path: path.join(__dirname, "static") },
-  routes = []
+  routes = [{ route: "/", root: path.join(__dirname, "static") }]
 } = {}) => {
   const app = express();
 
@@ -107,14 +94,17 @@ const createServer = ({
   // Log every access in Apache format to file.
   app.use(morgan("combined", { stream: accessLogStream }));
 
-  if (staticPath !== null) {
-    app.use(staticPath.prefix, express.static(staticPath.path));
-  }
-
   routes.forEach(route => {
-    route.method !== undefined
-      ? app[route.method.toLowerCase()](route.route, route.action)
-      : app.get(route.route, route.action);
+    let method = "get";
+    if (route.method) {
+      method = route.method;
+    }
+
+    if (route.root !== undefined) {
+      app.use(route.route, express.static(route.root));
+    } else {
+      app[method.toLowerCase()](route.route, route.action);
+    }
   });
 
   return app;
@@ -198,7 +188,6 @@ const listen = ({
 };
 
 module.exports = {
-  route: route,
   createServer: createServer,
   listen: listen
 };

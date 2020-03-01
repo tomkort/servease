@@ -33,14 +33,21 @@ test("Default static file server works and closing the server works.", async () 
 
 test("Routes with different methods.", async () => {
   const routes = [
-    servease.route("/getTest", "get", async (req, res) => {
-      await expect(req.method).toBe("GET");
-      res.send("OK");
-    }),
-    servease.route("/postTest", "post", async (req, res) => {
-      await expect(req.method).toBe("POST");
-      res.send("OK");
-    })
+    {
+      route: "/getTest",
+      action: async (req, res) => {
+        await expect(req.method).toBe("GET");
+        res.send("OK");
+      }
+    },
+    {
+      route: "/postTest",
+      method: "post",
+      action: async (req, res) => {
+        await expect(req.method).toBe("POST");
+        res.send("OK");
+      }
+    }
   ];
 
   const server = servease.createServer({ routes: routes });

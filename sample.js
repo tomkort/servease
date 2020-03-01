@@ -5,7 +5,7 @@ const args = process.argv.slice(2);
 
 const app =
   args.length > 0
-    ? servease.createServer({ staticPath: { path: args[0], prefix: "/" } })
+    ? servease.createServer({ routes: [{ route: "/", root: args[0] }] })
     : servease.createServer();
 
 let server = servease.listen({
