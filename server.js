@@ -30,6 +30,13 @@ class ServerProcess {
 }
 
 /**
+ * @callback Middleware
+ * @param {object} req - Request object from Express
+ * @param {object} res - Response object from Express
+ * @param {function} next - Callback function that must be called at the end of the middleware.
+ */
+
+/**
  * @typedef {Object} Route
  * @property {string} route - Path that the route matches to.
  * @property {string} [method="get"] - HTTP method of the request to respond to.
@@ -47,6 +54,8 @@ class ServerProcess {
  *          Enable extendeded query strings.
  * @param   {string} [cfg.logPath="./log"]
  *          Path to directory where to write logs.
+ * @param   {Middleware[]} [cfg.middleWares=[]]
+ *          List of middlewares. Middlewares are executed before every request.
  * @param   {Route[]} [cfg.routes=[{route: "/", root: path.join(__dirname, "static")}]]
  *          List of routes.
  * @returns {Object}
@@ -59,13 +68,14 @@ const createServer = ({
   extendedQueryStrings = false,
   logPath = "./log",
   errorsToConsole = true,
-  routes = [{ route: "/", root: path.join(__dirname, "static") }]
+  middleWares = [],
+  routes = [{ route: "/", root: path.join(__dirname, "static") }],
 } = {}) => {
   const app = express();
 
   const accessLogStream = rotatingFileStream.createStream("access.log", {
     interval: "1d",
-    path: logPath
+    path: logPath,
   });
 
   app.use(express.urlencoded({ extended: extendedQueryStrings }));
@@ -86,7 +96,7 @@ const createServer = ({
       morgan("dev", {
         skip: (req, res) => {
           return res.statusCode < 400;
-        }
+        },
       })
     );
   }
@@ -94,7 +104,12 @@ const createServer = ({
   // Log every access in Apache format to file.
   app.use(morgan("combined", { stream: accessLogStream }));
 
-  routes.forEach(route => {
+  middleWares.forEach((mw) => {
+    console.log("Middleware");
+    app.use(mw);
+  });
+
+  routes.forEach((route) => {
     let method = "get";
     if (route.method) {
       method = route.method;
@@ -137,7 +152,7 @@ const listen = ({
   port,
   processCount = 1,
   quiet = false,
-  httpsOptions = null
+  httpsOptions = null,
 }) => {
   const log = quiet ? () => {} : console.log;
 
@@ -189,5 +204,5 @@ const listen = ({
 
 module.exports = {
   createServer: createServer,
-  listen: listen
+  listen: listen,
 };
