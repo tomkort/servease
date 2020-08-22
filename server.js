@@ -105,7 +105,6 @@ const createServer = ({
   app.use(morgan("combined", { stream: accessLogStream }));
 
   middleWares.forEach((mw) => {
-    console.log("Middleware");
     app.use(mw);
   });
 
